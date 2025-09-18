@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
-import 'package:storypad/core/constants/app_constants.dart';
 import 'package:storypad/core/mixins/dispose_aware_mixin.dart';
 import 'package:storypad/core/objects/add_on_object.dart';
 import 'package:storypad/core/services/messenger_service.dart';
@@ -24,20 +23,15 @@ class AddOnsViewModel extends ChangeNotifier with DisposeAwareMixin {
   }
 
   List<AddOnObject>? addOns;
-  List<StoreProduct>? storeProducts;
+  Offering? offering;
   String? errorMessage;
-
-  StoreProduct? getProduct(String productIdentifier) {
-    return storeProducts?.where((storeProduct) => storeProduct.identifier == productIdentifier).firstOrNull;
-  }
 
   Future<void> load() async {
     errorMessage = null;
 
     try {
-      storeProducts = kIAPEnabled
-          ? await Purchases.getProducts(AppProduct.productIdentifiers, productCategory: ProductCategory.nonSubscription)
-          : [];
+      Offerings offerings = await Purchases.getOfferings();
+      offering = offerings.getOffering('add_ons');
     } on PlatformException catch (e) {
       errorMessage = e.message;
       debugPrint('$runtimeType#load error: $errorMessage');
@@ -51,7 +45,7 @@ class AddOnsViewModel extends ChangeNotifier with DisposeAwareMixin {
         type: AppProduct.templates,
         title: tr('add_ons.templates.title'),
         subtitle: tr('add_ons.templates.subtitle'),
-        displayPrice: getProduct('templates')?.priceString,
+        displayPrice: offering?.getPackage(AppProduct.templates.packageIdentifier)?.storeProduct.priceString,
         iconData: SpIcons.lightBulb,
         weekdayColor: 2,
         demoImages: [
@@ -67,7 +61,7 @@ class AddOnsViewModel extends ChangeNotifier with DisposeAwareMixin {
         type: AppProduct.relax_sounds,
         title: tr('add_ons.relax_sounds.title'),
         subtitle: tr('add_ons.relax_sounds.subtitle'),
-        displayPrice: getProduct('relax_sounds')?.priceString,
+        displayPrice: offering?.getPackage(AppProduct.templates.packageIdentifier)?.storeProduct.priceString,
         iconData: SpIcons.musicNote,
         weekdayColor: 1,
         demoImages: [

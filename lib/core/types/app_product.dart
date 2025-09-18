@@ -4,7 +4,13 @@ enum AppProduct {
   relax_sounds,
   templates;
 
-  static List<String> get productIdentifiers => values.map((e) => e.name).toList();
-
   String get productIdentifier => name;
+  String get packageIdentifier {
+    switch (this) {
+      case AppProduct.relax_sounds:
+        return 'relax_sounds_lifetime';
+      case AppProduct.templates:
+        return 'templates_lifetime';
+    }
+  }
 }
