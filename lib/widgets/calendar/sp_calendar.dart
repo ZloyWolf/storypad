@@ -170,13 +170,14 @@ class _SpCalendarState extends State<SpCalendar> {
                   onPageChanged: _onPageChanged,
                   itemBuilder: (context, pageIndex) {
                     final date = _getDateForPage(pageIndex);
+                    final isCurrentMonth = date.year == _currentYear && date.month == _currentMonth;
                     return _SpCalendarMonthGrid(
                       year: date.year,
                       month: date.month,
                       currentYear: _currentYear,
                       currentMonth: _currentMonth,
                       selectedDay: widget.selectedDay,
-                      feelingMapByDay: widget.feelingMapByDay,
+                      feelingMapByDay: isCurrentMonth ? widget.feelingMapByDay : const {},
                       onDayTapped: _onDayTapped,
                     );
                   },
